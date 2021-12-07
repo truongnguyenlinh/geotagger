@@ -19,7 +19,7 @@ amenity_schema = types.StructType([
 
 def main(in_directory, out_directory):
 
-    weather = spark.read.csv(in_directory, schema=amenity_schema)
+    weather = spark.read.json(in_directory, schema=amenity_schema)
     weather.show()
 
     # cleaned_data = weather.filter(weather['qflag'].isNull())
