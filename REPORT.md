@@ -151,3 +151,17 @@ From there, we can determine the frequency of specific amenities with the Lower 
 
 There are far too many items to analyze as part of our tour - who wants to see a bench when they visit Vancouver? In order to further analyze the data, only items which are tagged under tourism are considered.
 
+## Techniques Used
+
+The haversine function was utilized to determine distances between the amenities and location data collected using gpx data and JPG photos as well.
+Collecting datapoints from JPG files required a more vigorious process to extract the elements containing the GPS Latitude and Longitude.
+
+Using the GPS points of the photos and the amenities, it is then plotted on an interactive map. All of the sample photos taken have at least one amenity closeby.
+
+## Results and Findings
+
+Most shown above from the frequency of amenitity types, the top three are restaurants, fast food restaurants and cafes in the Greater Vancouver Area.
+
+## Limitations
+
+Some limitations we faced were

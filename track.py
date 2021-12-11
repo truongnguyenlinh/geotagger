@@ -2,11 +2,14 @@ import sys
 import numpy as np
 import pandas as pd
 import os
+from PIL import Image
+from PIL.ExifTags import TAGS, GPSTAGS
 from xml.dom.minidom import parse
 import matplotlib.pyplot as plt
 import geopandas as gpd
 import seaborn as sns
 from collections import Counter
+from glob import glob
 from pyspark.sql import SparkSession, functions, types, Row, Window
 
 assert sys.version_info >= (3, 5) # make sure we have Python 3.5+
@@ -50,7 +53,6 @@ def haversine(lon1, lat1, lon2, lat2, earth_radius=6371):
 def get_data(in_directory, amenity_schema=amenity_schema):
     vancouver_data = spark.read.json(in_directory, schema=amenity_schema)
     vancouver_data = vancouver_data.na.drop(subset=['name'])
-    # vancouver_data = vancouver_data.drop('timestamp')  # Not used as part of our dataset
     vancouver_data = vancouver_data.withColumn('amenity', functions.lower('amenity'))  
     w = Window.partitionBy('amenity')
     vancouver_data = vancouver_data.withColumn('count', functions.count('amenity').over(w))
@@ -62,7 +64,6 @@ def eda(vancouver_data):
     vancouver_data = vancouver_data.toPandas()
     amenities_list = set(vancouver_data['amenity'])
     counter_list = Counter(list(vancouver_data['amenity'])) 
-    print(counter_list)  # We can see various amenities, mainly restaurants
 
     # Bar Graph of amenities
     vancouver_data_grouped = vancouver_data.groupby('amenity')['amenity'].agg(count='count')
@@ -76,14 +77,34 @@ def eda(vancouver_data):
     mask = vancouver_data['tags'].apply(lambda x: True if 'tourism' in x else False)
     vancouver_data_attr = vancouver_data[mask]
     
-    print(vancouver_data_attr)
+    # Heatmap of attractions
+
+
+def gpx_read():
+    row_data = []
+    gpx_files = glob('gpx_data/*.gpx')
+    for file in gpx_files:   
+        xmldata = parse(file)
+        trkpts = xmldata.getElementsByTagName("trkpt")
+        for i in trkpts:
+            row_data.append([file, float(i.getAttribute('lat')), float(i.getAttribute('lon'))])
+    df = pd.DataFrame(row_data, columns=['source', 'gpx_lat', 'gpx_lon'])
+    df1 = df[df['source'] == gpx_files[0]]
+    return df1
+
+
+def exif_load():
 
 
 def main(in_directory):
 
     vancouver_data = get_data(in_directory)
     eda(vancouver_data)
+    gpx_data = gpx_read()
 
+    vancouver_data_merged = gpx_data.merge(vancouver_data, how="cross")
+    vancouver_data_merged['distance'] = vancouver_data_merged.apply(lambda x: haversine(x['gpx_lat'], x['gpx_lon'], x['lat'] , x['lon']), axis=1)
+    set(vancouver_data_merged[vancouver_data_merged['distance'] < 0.5]['amenity'])
     # vancouver_data.write.json(out_directory, compression='gzip', mode='overwrite')
 
 
