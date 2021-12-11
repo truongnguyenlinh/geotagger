@@ -77,7 +77,7 @@ def eda(vancouver_data):
     print(vancouver_data_attr)
 
 
-def main(in_directory, out_directory):
+def main(in_directory):
 
     vancouver_data = get_data(in_directory)
     eda(vancouver_data)
@@ -87,5 +87,4 @@ def main(in_directory, out_directory):
 
 if __name__ == '__main__':
     in_directory = sys.argv[1]
-    out_directory = sys.argv[2]
-    main(in_directory, out_directory)
+    main(in_directory)
