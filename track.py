@@ -2,14 +2,19 @@ import sys
 import numpy as np
 import pandas as pd
 import os
-from PIL import Image
+import PIL
 from PIL.ExifTags import TAGS, GPSTAGS
 from xml.dom.minidom import parse
-import matplotlib.pyplot as plt
-import geopandas as gpd
-import seaborn as sns
 from collections import Counter
 from glob import glob
+import matplotlib.pyplot as plt
+import folium
+from folium import plugins
+from folium.plugins import HeatMap
+import requests
+import webbrowser
+from IPython.display import Image, display
+import base64
 from pyspark.sql import SparkSession, functions, types, Row, Window
 
 assert sys.version_info >= (3, 5) # make sure we have Python 3.5+
@@ -78,6 +83,17 @@ def eda(vancouver_data):
     vancouver_data_attr = vancouver_data[mask]
     
     # Heatmap of attractions
+    latmean = vancouver_data_attr['lat'].mean()
+    lonmean = vancouver_data_attr['lon'].mean()
+    heat_df = vancouver_data_attr[['lat', 'lon']]
+    heat_df = heat_df.dropna(axis=0)
+    
+    map = folium.Map(location=[latmean, lonmean])
+    HeatMap(heat_df).add_to(folium.FeatureGroup(name='Heat Map').add_to(map))
+    folium.LayerControl().add_to(map)
+    map.save("map.html")
+
+    webbrowser.open("map.html")
 
 
 def gpx_read():
@@ -94,17 +110,18 @@ def gpx_read():
 
 
 def exif_load():
+    pass
 
 
 def main(in_directory):
 
     vancouver_data = get_data(in_directory)
     eda(vancouver_data)
-    gpx_data = gpx_read()
+    # gpx_data = gpx_read()
 
-    vancouver_data_merged = gpx_data.merge(vancouver_data, how="cross")
-    vancouver_data_merged['distance'] = vancouver_data_merged.apply(lambda x: haversine(x['gpx_lat'], x['gpx_lon'], x['lat'] , x['lon']), axis=1)
-    set(vancouver_data_merged[vancouver_data_merged['distance'] < 0.5]['amenity'])
+    # vancouver_data_merged = gpx_data.merge(vancouver_data, how="cross")
+    # vancouver_data_merged['distance'] = vancouver_data_merged.apply(lambda x: haversine(x['gpx_lat'], x['gpx_lon'], x['lat'] , x['lon']), axis=1)
+    # set(vancouver_data_merged[vancouver_data_merged['distance'] < 0.5]['amenity'])
     # vancouver_data.write.json(out_directory, compression='gzip', mode='overwrite')
 
 
