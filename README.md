@@ -40,13 +40,7 @@
 
 To run the application, complete the following steps:
 
-1. Running pyspark via the Terminal:
-
-   ```bash
-   $ spark-submit track.py osm
-   ```
-
-2. Running the code via a Jupyter Notebook:
+1. Running the code via a Jupyter Notebook:
 
     ```bash
     $ jupyter trust osm-analysis.ipynb
