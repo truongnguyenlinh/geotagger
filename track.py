@@ -70,44 +70,43 @@ def output_gpx(points, output_filename):
 
 
 def get_data(in_directory, amenity_schema=amenity_schema):
-    weather = spark.read.json(in_directory, schema=amenity_schema)
-    weather = weather.na.drop(subset=['name'])
-    # weather = weather.drop('timestamp')  # Not used as part of our dataset
-    weather = weather.withColumn('amenity', functions.lower('amenity'))  
+    vancouver_data = spark.read.json(in_directory, schema=amenity_schema)
+    vancouver_data = vancouver_data.na.drop(subset=['name'])
+    # vancouver_data = vancouver_data.drop('timestamp')  # Not used as part of our dataset
+    vancouver_data = vancouver_data.withColumn('amenity', functions.lower('amenity'))  
     w = Window.partitionBy('amenity')
-    weather = weather.withColumn('count', functions.count('amenity').over(w))
-    return weather
+    vancouver_data = vancouver_data.withColumn('count', functions.count('amenity').over(w))
+    return vancouver_data
 
 
-def eda(weather):
+def eda(vancouver_data):
     # Dict format of number of amenities
-    weather = weather.toPandas()
-    amenities_list = set(weather['amenity'])
-    counter_list = Counter(list(weather['amenity'])) 
+    vancouver_data = vancouver_data.toPandas()
+    amenities_list = set(vancouver_data['amenity'])
+    counter_list = Counter(list(vancouver_data['amenity'])) 
     print(counter_list)  # We can see various amenities, mainly restaurants
 
     # Bar Graph of amenities
-    weather_grouped = weather.groupby('amenity')['amenity'].agg(count='count')
-    ax = weather_grouped.plot(kind='bar', figsize=(10,6), fontsize=8)
+    vancouver_data_grouped = vancouver_data.groupby('amenity')['amenity'].agg(count='count')
+    ax = vancouver_data_grouped.plot(kind='bar', figsize=(10,6), fontsize=8)
     ax.set_title("Count of Different Amenities in Vancouver")
     ax.set_ylabel("Count")
     plt.subplots_adjust(bottom=0.30)
     # plt.show()
 
     # Find attractions
-    mask = weather['tags'].apply(lambda x: True if 'tourism' in x else False)
-    weather_attr = weather[mask]
+    mask = vancouver_data['tags'].apply(lambda x: True if 'tourism' in x else False)
+    vancouver_data_attr = vancouver_data[mask]
     
-    print(weather_attr)
+    print(vancouver_data_attr)
 
 
 def main(in_directory, out_directory):
 
-    weather = get_data(in_directory)
-    eda(weather)
+    vancouver_data = get_data(in_directory)
+    eda(vancouver_data)
 
-    
-    # weather.write.json(out_directory, compression='gzip', mode='overwrite')
+    # vancouver_data.write.json(out_directory, compression='gzip', mode='overwrite')
 
 
 if __name__ == '__main__':
