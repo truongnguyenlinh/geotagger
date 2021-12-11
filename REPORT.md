@@ -16,6 +16,8 @@ As Vancouver locals, we can fail to recognize how unique and special the city is
 
 ## Data Used
 
+The data obtained were taken at different locations randomly throughout the week. These photos were part of a tour around Greater Vancouver. Each photo originally starts in HEIC format, the default format for photos taken on iOS devices. In order to work with the data, they are exported to JPEG after they're importated to a MacOS device. From there, the JPEG files are converted to EXIF to obtain information such as latitude, longitude, time and more.
+
 ## Exploratory Data Analysis
 
 We will first obtain visualizations on the data set prior to obtaining any additional information. The table below displays the datatypes of each column seen in the data frame, after a count of total amenities has been obtained.
@@ -151,6 +153,12 @@ From there, we can determine the frequency of specific amenities with the Lower 
 
 There are far too many items to analyze as part of our tour - who wants to see a bench when they visit Vancouver? In order to further analyze the data, only items which are tagged under tourism are considered.
 
+<img src='assets/tourism_df.png'>
+
+Using the filtered attractions information, we are able to obtain a heatmap of where most of the attractions are found:
+
+<img src='assets/map.png'>
+
 ## Techniques Used
 
 The haversine function was utilized to determine distances between the amenities and location data collected using gpx data and JPG photos as well.
@@ -164,4 +172,4 @@ Most shown above from the frequency of amenitity types, the top three are restau
 
 ## Limitations
 
-Some limitations we faced were
+In addition to the photos taken, GPX data was obtained as part of the tour in hopes to cross reference the photos taken with the path walked. Due to the large number of data points in the GPX data, we were unable to plot this on a map. The rendering speed took too long and there were too many redundant data points. GPX data is recorded every second; therefore, some points from the GPX files are unnecessary and cause overhead. As such, we were limited in the usage of data to EXIF photos only.
