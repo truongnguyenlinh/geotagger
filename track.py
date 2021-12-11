@@ -4,6 +4,8 @@ import pandas as pd
 import os
 from xml.dom.minidom import parse
 import matplotlib.pyplot as plt
+import geopandas as gpd
+import seaborn as sns
 from collections import Counter
 from pyspark.sql import SparkSession, functions, types, Row, Window
 
@@ -68,7 +70,7 @@ def eda(vancouver_data):
     ax.set_title("Count of Different Amenities in Vancouver")
     ax.set_ylabel("Count")
     plt.subplots_adjust(bottom=0.30)
-    # plt.show()
+    plt.savefig('assets/{}'.format("amenities_bar.png"))
 
     # Find attractions
     mask = vancouver_data['tags'].apply(lambda x: True if 'tourism' in x else False)
