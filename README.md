@@ -5,6 +5,8 @@
 
 - Overview
 - Installation
+- Usage
+- Exploratory Data Analysis
 
 ## Overview
 
@@ -49,3 +51,18 @@ To run the application, complete the following steps:
    ```bash
    $ spark-submit track.py osm
    ```
+
+## Exploratory Data Analysis
+
+We will first obtain visualizations on the data set prior to obtaining any additional information. The table below displays the datatypes of each column seen in the data frame, after a count of total amenities has been obtained.
+
+| Column Name | Data Type           |
+| ----------- | ------------------- |
+| `lat`       | double              |
+| `lon`       | double              |
+| `timestamp` | timestamp           |
+| `amenity`   | string              |
+| `name`      | string              |
+| `tags`      | map<string, string> |
+| `count`     | bigint              |
+
